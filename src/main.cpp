@@ -2,7 +2,7 @@
 iarduino_OLED myOLED(0x3C); // Объявляем объект myOLED, указывая адрес дисплея на шине I2C: 0x3C или 0x3D.
 #include <EncButton.h>
 #include <iarduino_RTC.h>
-EncButton<EB_TICK, 2, 4, 3> enc; // энкодер с кнопкой <A, B, KEY>
+EncButton<EB_TICK, 3, 4, 2> enc; // энкодер с кнопкой <A, B, KEY>
 iarduino_RTC watch(RTC_DS1307);  // Объявляем объект watch для работы с RTC модулем на базе чипа DS1307, используется шина I2C.
 
 extern uint8_t MediumFont[]; // Подключаем шрифт MediumFont.
