@@ -24,7 +24,7 @@ Arduino Nano v3
 Зуммер
 
 ## Принципиальная_схема
-
+![cxema](https://github.com/freearduino/timer/blob/main/docs/cxem.png)
 ## Используемые_библиотеки
 
 ## Описание_подпрограм
