@@ -21,6 +21,12 @@ unsigned long sec_timer;
 //Флаги настроек будильника и времени
 bool FlagMinutTime = true;
 bool FlagHourTime = true;
+//Будильник
+bool FlagMinutAlarm = true;
+bool FlagHourAlarm = true;
+int AlarmH = 0;
+int AlarmM = 0;
+bool FlagAlarm = true;
 void setup()
 {
     sec_timer = millis(); // "сбросить" таймер
@@ -106,6 +112,104 @@ void TimeOnline()
     }
     myOLED.print(s); // Выводим секунды прошедшие с момента старта скетча, в формате СС.
 }
+//П.П настройки будтльника
+void AlarmWrite()
+{
+    while (!FlagAlarmSettings)
+    {
+        enc1.tick();
+        //Настройка часов
+        while (FlagHourAlarm)
+        {
+            enc1.tick(); //Энкодер, опрос
+            //Поворот направо увеличение часов
+            if (enc1.isRight())
+            {
+                // Serial.println("right");
+                if (AlarmH >= 23)
+                {
+                    AlarmH = 0;
+                }
+                else
+                {
+                    AlarmH += 1;
+                }
+                WriteH(AlarmH);
+            }
+            //Поворот налево уменьшение часов
+            if (enc1.isLeft())
+            {
+                // Serial.println("left");
+                if (AlarmH <= 0)
+                {
+                    AlarmH = 23;
+                }
+                else
+                {
+                    AlarmH -= 1;
+                }
+                WriteH(AlarmH);
+            }
+            //Вывод часов
+
+            enc1.tick();
+            // TimeOnline();
+            //Если нажали выходим
+            if (enc1.isClick())
+            {
+                // Serial.println("Exit Hour");
+                FlagHourAlarm = false;
+            }
+        }
+
+        //Настройка минут
+        while (FlagMinutAlarm)
+        {
+            enc1.tick(); //Энкодер, опрос
+            //Поворот направо увеличение часов
+            if (enc1.isRight())
+            {
+                // Serial.println("right");
+                if (AlarmM >= 59)
+                {
+                    AlarmM = 0;
+                }
+                else
+                {
+                    AlarmM += 1;
+                }
+                WriteM(AlarmM);
+            }
+            //Поворот налево уменьшение часов
+            if (enc1.isLeft())
+            {
+                // Serial.println("left");
+                if (AlarmM <= 0)
+                {
+                    AlarmM = 59;
+                }
+                else
+                {
+                    AlarmM -= 1;
+                }
+                WriteM(AlarmM);
+            }
+         
+            //Если нажали выходим
+            enc1.tick();
+            if (enc1.isClick())
+            {
+                // Serial.println("Exit hour");
+                FlagMinutAlarm = false;
+                FlagAlarmSettings = true;
+                FlagHourAlarm = true;
+            }
+        }
+
+        LedNumber += 1;
+        //FlagAlarmSettings = false;
+    }
+}
 void loop()
 {
     enc1.tick();
@@ -132,6 +236,8 @@ void loop()
         {
             myOLED.clrScr();
             FlagTime = false;
+            FlagMinutTime = true;
+            FlagHourTime = true;
             FlagTimeSettings = true;
             FlagAlarmSettings = true;
         }
@@ -239,12 +345,12 @@ void loop()
                     // Serial.println("Exit hour");
                     FlagMinutTime = false;
                     FlagTimeSettings = true;
-                    FlagHourTime = true;
+                    //FlagHourTime = true;
                 }
             }
 
             LedNumber += 1;
-            FlagTimeSettings = true;
+            //FlagTimeSettings = false;
         }
 
         break;
@@ -256,23 +362,27 @@ void loop()
             myOLED.setCursor(0, 20);
             myOLED.print("Alarm");
             FlagAlarmSettings = false;
-            FlagTime = true;
+            FlagAlarm = true;
+            FlagMinutAlarm = true;
+            FlagHourAlarm = true;
+
+            myOLED.setCursor(16, 39); // Устанавливаем курсор в координату 16:31, это будет нижняя левая точка первой цифры выведенной функцией print().
+            if (AlarmH < 10)
+            {
+                myOLED.print(0);
+            }
+            myOLED.print(AlarmH); // Выводим часы прошедшие с момента старта скетча, в формате ЧЧ.
+            myOLED.print(":");    // Выводим текст состоящий из одного символа «:»
+            if (AlarmM < 10)
+            {
+                myOLED.print(0);
+            }
+            myOLED.print(AlarmM); // Выводим минуты прошедшие с момента старта скетча, в формате ММ.
         }
+        //Настройка времени будильника
+        AlarmWrite();
 
         break;
     }
 
-    //Энкодер
-    // if (enc1.isLeft())
-    //     Serial.println("left"); // поворот налево
-    // if (enc1.isRight())
-    //     Serial.println("right"); // поворот направо
-    // if (enc1.isClick())
-    //     Serial.println("press");
-
-    // if (millis() % 1000 == 0)
-    // {                                                     // Если прошла 1 секунда.
-    //     Serial.println(watch.gettime("d-m-Y, H:i:s, D")); // Выводим время.
-    //     delay(1);                                         // Приостанавливаем скетч на 1 мс, чтоб не выводить время несколько раз за 1мс.
-    // }
 }
