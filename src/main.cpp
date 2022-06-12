@@ -24,9 +24,11 @@ bool FlagHourTime = true;
 //Будильник
 bool FlagMinutAlarm = true;
 bool FlagHourAlarm = true;
-int AlarmH = 0;
+int AlarmH = 1;
 int AlarmM = 0;
 bool FlagAlarm = true;
+int pinBeep = 5;
+int pinLed = 6;
 void setup()
 {
     sec_timer = millis(); // "сбросить" таймер
@@ -35,7 +37,11 @@ void setup()
     myOLED.begin();             // Инициируем работу с дисплеем.
     myOLED.setFont(MediumFont); // Указываем шрифт который требуется использовать для вывода цифр и текста.
     enc1.setType(TYPE1);
-} //
+    pinMode(pinBeep, OUTPUT);
+    pinMode(pinLed, OUTPUT);
+    digitalWrite(pinBeep, LOW);
+    digitalWrite(pinLed, LOW);
+}
 //Вывод часов
 void WriteH(int hour)
 {
@@ -194,7 +200,7 @@ void AlarmWrite()
                 }
                 WriteM(AlarmM);
             }
-         
+
             //Если нажали выходим
             enc1.tick();
             if (enc1.isClick())
@@ -207,7 +213,19 @@ void AlarmWrite()
         }
 
         LedNumber += 1;
-        //FlagAlarmSettings = false;
+        // FlagAlarmSettings = false;
+    }
+}
+//Звеним будильником
+void AlarmBeep()
+{
+    if ((h == AlarmH) && (m == AlarmM))
+    {
+        digitalWrite(pinBeep, HIGH);
+        digitalWrite(pinLed, HIGH);
+        delay(2000);
+        digitalWrite(pinBeep, LOW);
+        digitalWrite(pinLed, LOW);
     }
 }
 void loop()
@@ -345,12 +363,12 @@ void loop()
                     // Serial.println("Exit hour");
                     FlagMinutTime = false;
                     FlagTimeSettings = true;
-                    //FlagHourTime = true;
+                    // FlagHourTime = true;
                 }
             }
 
             LedNumber += 1;
-            //FlagTimeSettings = false;
+            // FlagTimeSettings = false;
         }
 
         break;
@@ -384,5 +402,5 @@ void loop()
 
         break;
     }
-
+    AlarmBeep();
 }
